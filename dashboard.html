@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم</title>
+    <link href="{{ url_for('static', filename='STYLE.css') }}" rel="stylesheet">
+    <style>
+        /* أنماط ضرورية لترتيب العناصر داخل لوحة التحكم */
+        main { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+        .form-grid { display: grid; grid-template-columns: 150px 1fr; gap: 10px 20px; align-items: center; }
+        .form-grid input[type="text"], .form-grid textarea, .form-grid input[type="password"], .form-grid select { width: 100%; }
+        /* استثناء الزر والتكستاريا من الـ grid column ليمتدا على طول المساحة */
+        .form-grid button { grid-column: 1 / -1; margin-top: 15px; } 
+        .form-grid textarea { grid-column: 1 / -1; }
+
+        .barber-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .data-list { list-style: none; padding: 0; }
+        .data-list li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--muted); }
+        .data-list li:last-child { border-bottom: none; }
+        
+        /* لتحديد العنصر الذي يمتد على كامل العرض */
+        .full-width { grid-column: 1 / -1; }
+
+        @media(max-width:768px){
+            .form-grid { grid-template-columns: 1fr; }
+            .form-grid label { grid-column: 1 / -1; }
+            .form-grid input, .form-grid textarea, .form-grid select, .form-grid small { grid-column: 1 / -1; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <nav class="nav" style="justify-content: space-between; height: auto;">
+            <div class="brand" style="background: none; box-shadow: none;">
+                <a href="/" style="color: var(--primary); text-decoration: none; font-size: 1.5em; font-weight: bold;">لوحة التحكم</a>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">تسجيل الخروج</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <h1>لوحة تحكم الموقع</h1>
+
+    <section class="card-section">
+        <h2 class="card-title">🔒 إدارة كلمة السر</h2>
+        <div class="card-body">
+            <form id="password-form" class="form-grid">
+                <label for="current_password">كلمة السر الحالية</label>
+                <input type="password" id="current_password" name="current_password" required>
+
+                <label for="new_password">كلمة السر الجديدة</label>
+                <input type="password" id="new_password" name="new_password" required minlength="4">
+                
+                <button type="submit" class="btn btn-secondary">تغيير كلمة السر</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="card-section">
+        <h2 class="card-title">✍️ إدارة النصوص الرئيسية (Hero)</h2>
+        <div class="card-body">
+            <form id="hero-texts-form" class="form-grid">
+                <label for="hero_title">العنوان الرئيسي</label>
+                <input type="text" id="hero_title" name="hero_title" value="{{ site_data.hero_title }}" required>
+
+                <label for="hero_desc">الوصف</label>
+                <textarea id="hero_desc" name="hero_desc" rows="3">{{ site_data.hero_desc }}</textarea>
+                
+                <button type="submit" class="btn btn-save">حفظ النصوص الرئيسية</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="card-section">
+        <h2 class="card-title">✍️ إدارة قسم معلومات عنا (#About)</h2>
+        <div class="card-body">
+            <form id="about-texts-form" class="form-grid">
+                
+                <label for="about_title">عنوان القسم (معلومات عنا)</label>
+                <input type="text" id="about_title" name="about_title" 
+                        value="{{ site_data.extra_texts.about_title if site_data.extra_texts and site_data.extra_texts.about_title else '' }}" required>
+                
+                <hr class="full-width" style="margin: 15px 0; border-top: 1px dashed var(--muted);">
+                <h3 class="full-width">البطاقة الأولى (الصورة والوصف)</h3>
+                
+                <label for="about_image1">صورة البطاقة 1 (اسم الملف)</label>
+                <input type="text" id="about_image1" name="about_image1" 
+                        value="{{ site_data.extra_texts.about_image1 if site_data.extra_texts and site_data.extra_texts.about_image1 else '' }}">
+                <small style="grid-column: 2 / -1;">مثال: about1.jpg (تأكد من وجود الملف في مجلد static)</small>
+
+                <label for="about_desc_card1" class="full-width">وصف البطاقة 1</label>
+                <textarea id="about_desc_card1" name="about_desc_card1" rows="3">{{ site_data.extra_texts.about_desc_card1 if site_data.extra_texts and site_data.extra_texts.about_desc_card1 else '' }}</textarea>
+
+                <hr class="full-width" style="margin: 15px 0; border-top: 1px dashed var(--muted);">
+                <h3 class="full-width">البطاقة الثانية (الصورة والوصف)</h3>
+                
+                <label for="about_image2">صورة البطاقة 2 (اسم الملف)</label>
+                <input type="text" id="about_image2" name="about_image2" 
+                        value="{{ site_data.extra_texts.about_image2 if site_data.extra_texts and site_data.extra_texts.about_image2 else '' }}">
+                <small style="grid-column: 2 / -1;">مثال: about2.jpg</small>
+
+                <label for="about_desc_card2" class="full-width">وصف البطاقة 2</label>
+                <textarea id="about_desc_card2" name="about_desc_card2" rows="3">{{ site_data.extra_texts.about_desc_card2 if site_data.extra_texts and site_data.extra_texts.about_desc_card2 else '' }}</textarea>
+
+                <button type="submit" class="btn btn-save">حفظ تعديلات "معلومات عنا"</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="card-section">
+        <h2 class="card-title">✂️ إدارة الحلاقين</h2>
+        <div class="card-body barber-grid">
+            {% for barber in site_data.barbers %}
+            <div class="barber-card card" data-old-name="{{ barber.name }}">
+                <img src="{{ url_for('static', filename=barber.image) }}" alt="صورة {{ barber.name }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                <form class="update-barber-form" data-old-name="{{ barber.name }}">
+                    <label>الاسم:</label>
+                    <input type="text" name="name" value="{{ barber.name }}" required>
+                    
+                    <label>الهاتف:</label>
+                    <input type="text" name="phone" value="{{ barber.phone }}" required>
+                    
+                    <label>صورة (اسم ملف):</label>
+                    <input type="text" name="image" value="{{ barber.image }}" required>
+                    
+                    <label>انستغرام:</label>
+                    <input type="text" name="instagram" value="{{ barber.instagram if barber.instagram else '' }}">
+                    
+                    <div style="margin-top: 10px; display: flex; justify-content: space-between; gap: 10px;">
+                        <button type="submit" class="btn btn-save" style="flex-grow: 1; padding: 10px;">تحديث</button>
+                        <button type="button" class="btn btn-danger delete-barber-btn" data-name="{{ barber.name }}" style="flex-grow: 1; padding: 10px;">حذف</button>
+                    </div>
+                </form>
+            </div>
+            {% endfor %}
+            
+            <div class="barber-card card" style="background-color: #1a1e27;">
+                <h3>+ إضافة حلاق جديد</h3>
+                <form id="add-barber-form">
+                    <label>الاسم:</label>
+                    <input type="text" name="name" required>
+                    
+                    <label>الهاتف:</label>
+                    <input type="text" name="phone" placeholder="مثال: 905001234567" required>
+                    
+                    <label>صورة (اسم ملف):</label>
+                    <input type="text" name="image" placeholder="مثال: kuafor_new.jpg" required>
+                    
+                    <label>انستغرام:</label>
+                    <input type="text" name="instagram">
+                    
+                    <button type="submit" class="btn btn-secondary" style="margin-top: 10px; width: 100%;">إضافة</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="card-section">
+        <h2 class="card-title">🖼️ إدارة صور المعرض</h2>
+        <div class="card-body">
+            <h3>إضافة صورة جديدة</h3>
+            <form id="add-image-form" class="form-grid" style="grid-template-columns: 1fr 1fr auto;">
+                <input type="text" name="filename" placeholder="اسم ملف الصورة (مثال: qasim_2.jpg)" required>
+                <select name="barber_name" required>
+                    <option value="">اختر الحلاق</option>
+                    {% for barber in site_data.barbers %}
+                        <option value="{{ barber.name }}">{{ barber.name }}</option>
+                    {% endfor %}
+                    <option value="غير محدد">غير محدد</option>
+                </select>
+                <button type="submit" class="btn btn-secondary" style="grid-column: auto; margin-top: 0;">إضافة صورة</button>
+            </form>
+            
+            <h3 style="margin-top: 25px;">الصور الحالية</h3>
+            <ul class="data-list">
+                {% for image_obj in site_data.gallery_images %}
+                <li>
+                    <span>{{ image_obj.filename }} (لـ: **{{ image_obj.barber_name }}**)</span>
+                    <div class="actions">
+                        <button type="button" class="btn btn-danger delete-image-btn" data-filename="{{ image_obj.filename }}" style="padding: 5px 10px;">حذف</button>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <section class="card-section">
+        <h2 class="card-title">📝 إدارة النصوص الإضافية (Extra)</h2>
+        <div class="card-body">
+            
+            <p style="color: var(--primary); font-weight: bold; margin-bottom: 20px;">
+                *ملاحظة: لتمكين التحكم بالخريطة والعنوان وأوقات العمل، قم بإضافة المفاتيح التالية: 
+                <br>
+                <span style="display: inline-block; margin-top: 5px;">`opening_hours`، `address`، `map_iframe_code` (لقيمة كود الـ iframe الكامل)</span>
+            </p>
+            
+            <h3>إضافة نص جديد</h3>
+            <form id="add-text-form" class="form-grid" style="grid-template-columns: 1fr 1fr auto;">
+                <input type="text" name="key" placeholder="مفتاح النص (بالإنجليزي/بدون مسافات)" required>
+                <input type="text" name="value" placeholder="قيمة النص (بالعربي أو كود الخريطة)" required>
+                <button type="submit" class="btn btn-secondary" style="grid-column: auto; margin-top: 0;">إضافة نص</button>
+            </form>
+            
+            <h3 style="margin-top: 25px;">النصوص الحالية (مثل أوقات العمل والعنوان)</h3>
+            <ul class="data-list">
+                {% for key, value in site_data.extra_texts.items() %}
+                    {% if not key.startswith('about_') and key not in ['hero_title', 'hero_desc'] %}
+                    <li>
+                        <span>**{{ key }}**: {{ value | truncate(50) }}</span> 
+                        <div class="actions">
+                            <button type="button" class="btn btn-danger delete-text-btn" data-key="{{ key }}" style="padding: 5px 10px;">حذف</button>
+                        </div>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+    
+</main>
+
+
+<script>
+    // الدوال المساعدة للـAPI
+    function postData(url, data) {
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                // التعامل مع أخطاء الخادم (مثل 400)
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'حدث خطأ في الشبكة.');
+                });
+            }
+            return response.json();
+        });
+    }
+
+    function deleteData(url) {
+        return fetch(url, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'حدث خطأ في الشبكة.');
+                });
+            }
+            return response.json();
+        });
+    }
+
+    // 1. معالج كلمة السر
+    document.getElementById('password-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            current_password: form.current_password.value,
+            new_password: form.new_password.value
+        };
+        
+        postData('/api/change_password', data)
+        .then(data => {
+            alert(data.message);
+            if (data.success) { window.location.href = "{{ url_for('admin_login') }}"; }
+        })
+        .catch(error => { console.error('Error:', error); alert(error.message); });
+    });
+
+    // 2. معالج النصوص الرئيسية (Hero)
+    document.getElementById('hero-texts-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            hero_title: form.hero_title.value,
+            hero_desc: form.hero_desc.value
+        };
+        postData('/api/update_texts', data)
+        .then(data => {
+            alert(data.message);
+            if (data.success) { window.location.reload(); }
+        })
+        .catch(error => { console.error('Error:', error); alert(error.message); });
+    });
+
+    // 3. معالج قسم "معلومات عنا" 
+    document.getElementById('about-texts-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const data = {
+            about_title: form.about_title.value,
+            about_desc_card1: form.about_desc_card1.value,
+            about_image1: form.about_image1.value,
+            about_desc_card2: form.about_desc_card2.value,
+            about_image2: form.about_image2.value
+        };
+
+        postData('/api/update_about', data)
+        .then(data => {
+            alert(data.message);
+            if (data.success) { window.location.reload(); }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
+        });
+    });
+
+
+    // 4. إدارة الحلاقين - إضافة
+    document.getElementById('add-barber-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        // يجب أن يكون رقم الهاتف بالصيغة الدولية وبدون أي رموز (+, مسافات)
+        const phone_number = form.phone.value.replace(/[^0-9]/g, ''); 
+        const data = {
+            name: form.name.value,
+            phone: phone_number,
+            image: form.image.value,
+            instagram: form.instagram.value || ""
+        };
+        
+        postData('/api/add_barber', data)
+        .then(data => {
+            alert(data.message);
+            if (data.success) { window.location.reload(); }
+        })
+        .catch(error => { console.error('Error:', error); alert(error.message); });
+    });
+
+    // 5. إدارة الحلاقين - تحديث
+    document.querySelectorAll('.update-barber-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const oldName = form.getAttribute('data-old-name');
+            // يجب أن يكون رقم الهاتف بالصيغة الدولية وبدون أي رموز (+, مسافات)
+            const phone_number = form.phone.value.replace(/[^0-9]/g, ''); 
+            const data = {
+                old_name: oldName,
+                name: form.name.value,
+                phone: phone_number,
+                image: form.image.value,
+                instagram: form.instagram.value || ""
+            };
+            
+            postData('/api/update_barber', data)
+            .then(data => {
+                alert(data.message);
+                if (data.success) { window.location.reload(); }
+            })
+            .catch(error => { console.error('Error:', error); alert(error.message); });
+        });
+    });
+
+    // 6. إدارة الحلاقين - حذف
+    document.querySelectorAll('.delete-barber-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const name = this.getAttribute('data-name');
+            if (confirm(`هل أنت متأكد من حذف الحلاق ${name}؟`)) {
+                deleteData(`/api/delete_barber/${name}`)
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) { window.location.reload(); }
+                })
+                .catch(error => { console.error('Error:', error); alert(error.message); });
+            }
+        });
+    });
+
+    // 7. إدارة الصور - إضافة
+    document.getElementById('add-image-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            filename: form.filename.value,
+            barber_name: form.barber_name.value
+        };
+        
+        postData('/api/add_image', data)
+        .then(data => {
+            alert(data.message);
+            if (data.success) { window.location.reload(); }
+        })
+        .catch(error => { console.error('Error:', error); alert(error.message); });
+    });
+
+    // 8. إدارة الصور - حذف
+    document.querySelectorAll('.delete-image-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filename = this.getAttribute('data-filename');
+            if (confirm(`هل أنت متأكد من حذف الصورة ${filename}؟`)) {
+                deleteData(`/api/delete_image/${filename}`)
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) { window.location.reload(); }
+                })
+                .catch(error => { console.error('Error:', error); alert(error.message); });
+            }
+        });
+    });
+
+    // 9. إدارة النصوص الإضافية - إضافة
+    document.getElementById('add-text-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+            key: form.key.value,
+            value: form.value.value
+        };
+        
+        postData('/api/add_text', data)
+        .then(data => {
+            alert(data.message);
+            if (data.success) { window.location.reload(); }
+        })
+        .catch(error => { console.error('Error:', error); alert(error.message); });
+    });
+
+    // 10. إدارة النصوص الإضافية - حذف
+    document.querySelectorAll('.delete-text-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const key = this.getAttribute('data-key');
+            if (confirm(`هل أنت متأكد من حذف النص بالمفتاح ${key}؟`)) {
+                deleteData(`/api/delete_text/${key}`)
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) { window.location.reload(); }
+                })
+                .catch(error => { console.error('Error:', error); alert(error.message); });
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>
