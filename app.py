@@ -1,29 +1,73 @@
+from flask import Flask, render_template, request, redirect, url_for, flash
 import json
-import hashlib
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 
-# إعداد المسارات لتقرأ من المجلد الرئيسي مباشرة
-app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
-app.secret_key = 'lion_king_2025'
+app = Flask(__name__)
+app.secret_key = "super_secret_key"  # مفتاح ضروري لتأمين الجلسات
 
-DATA_FILE = 'site_data.json'
+# بيانات افتراضية للموقع (سيتم عرضها في index.html)
+site_data = {
+    "hero_title": "صالون الأسد للحلاقة",
+    "hero_desc": "أفضل تجربة حلاقة في المنطقة، جودة وعناية فائقة.",
+    "barbers": [
+    {"name": "رائد", "phone": "905011087030, "instagram": "", "image": "kuafor_raed.jpg"},
+        {"name": "قاسم", "phone": "905354057831", "instagram": "https://www.instagram.com/bi9ck?igsh=MWZqdjgzaGozMTJyYg%3D%3D&utm_source=qr", "image": "kuaför_qasim.jpg"},
+        {"name": "حيدر", "phone": "905383686314", "instagram": "", "image": "kuafor_hayder.jpeg"},
+        {"name": "مصطفى", "phone": "905315969753", "instagram": "https://www.instagram.com/mustafa_hairdresser77?igsh=NXZqdmhyeG04YzQ3&utm_source=qr", "image": "kuafor_mustafa.jpg"}
+    ],
+    "gallery_images": [],
+    "extra_texts": {
+        "about_title": "ما يميزنا",
+        "about_desc_card1": "حلاقة عصرية تناسب شخصيتك.",
+        "about_image1": "صوره داخليه.jpg",
+        "opening_hours": "يومياً من 9:00 صباحاً حتى 10:00 مساءً",
+        "address": "اسطنبول، الفاتح، شارع الاستقلال"
+    }
+}
 
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        return {"hero_title": "مرحبا بك", "hero_desc": "صالون الحلاقة", "barbers": [], "gallery_images": []}
-    with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
+# 1. الصفحة الرئيسية (التي أرسلت كودها أنت)
 @app.route('/')
 def index():
-    # هنا Flask سيبحث عن index.html في المجلد الرئيسي
-    return render_template('index.html', site_data=load_data())
+    return render_template('index.html', site_data=site_data)
 
-@app.route('/admin_login')
+# 2. صفحة تسجيل دخول الإدارة (حل مشكلة Method Not Allowed)
+@app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # يمكنك تغيير admin و 1234 حسب رغبتك
+        if username == 'admin' and password == '1234':
+            return redirect(url_for('dashboard'))
+        else:
+            return "بيانات الدخول خاطئة! <a href='/admin_login'>حاول مرة أخرى</a>"
+            
     return render_template('admin_login.html')
 
+# 3. لوحة التحكم (Dashboard)
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html', site_data=site_data)
+
+# 4. وظيفة إضافة حلاق جديد
+@app.route('/add_barber', methods=['POST'])
+def add_barber():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        phone = request.form.get('phone')
+        instagram = request.form.get('instagram')
+        
+        # إضافة الحلاق الجديد للقائمة
+        new_barber = {
+            "name": name,
+            "phone": phone,
+            "instagram": instagram,
+            "image": "kuafor_mustafa.jpg" # صورة افتراضية
+        }
+        
+        site_data['barbers'].append(new_barber)
+        return redirect(url_for('dashboard'))
+
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
