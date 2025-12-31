@@ -7,10 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename='STYLE.css') }}" rel="stylesheet">
     <style>
-        /* أنماط أساسية للخريطة لتجنب مشاكل العرض */
+        /* أنماط أساسية للخريطة */
         .map-embed iframe {
             width: 100%;
-            height: 400px; /* يمكن تغيير الارتفاع حسب الحاجة */
+            height: 400px;
             border: none;
             border-radius: 8px;
         }
@@ -59,23 +59,21 @@
                 <p class="subtitle">نحن نجمع بين الخبرة والجودة لنمنحك أفضل إطلالة.</p>
                 
                 <div class="grid cards" style="grid-template-columns: 1fr 1fr; align-items: stretch;">
-                    
                     <div class="card">
-                        <img src="{{ url_for('static', filename=site_data.extra_texts.about_image1 if site_data.extra_texts and site_data.extra_texts.about_image1 else 'placeholder.jpg') }}" 
+                        <img src="{{ url_for('static', filename=site_data.extra_texts.about_image1 if site_data.extra_texts and site_data.extra_texts.about_image1 else 'about1.jpg') }}" 
                              alt="صورة البطاقة 1" style="height: 200px; object-fit: cover; margin-bottom: 15px;">
                         <p style="color: var(--muted); line-height: 1.6;">
-                            {{ site_data.extra_texts.about_desc_card1 if site_data.extra_texts and site_data.extra_texts.about_desc_card1 else 'وصف البطاقة 1 الافتراضي.' }}
+                            {{ site_data.extra_texts.about_desc_card1 if site_data.extra_texts and site_data.extra_texts.about_desc_card1 else 'خبرة تزيد عن 10 سنوات.' }}
                         </p>
                     </div>
 
                     <div class="card">
-                        <img src="{{ url_for('static', filename=site_data.extra_texts.about_image2 if site_data.extra_texts and site_data.extra_texts.about_image2 else 'placeholder.jpg') }}" 
+                        <img src="{{ url_for('static', filename=site_data.extra_texts.about_image2 if site_data.extra_texts and site_data.extra_texts.about_image2 else 'about2.jpg') }}" 
                              alt="صورة البطاقة 2" style="height: 200px; object-fit: cover; margin-bottom: 15px;">
                         <p style="color: var(--muted); line-height: 1.6;">
-                            {{ site_data.extra_texts.about_desc_card2 if site_data.extra_texts and site_data.extra_texts.about_desc_card2 else 'وصف البطاقة 2 الافتراضي.' }}
+                            {{ site_data.extra_texts.about_desc_card2 if site_data.extra_texts and site_data.extra_texts.about_desc_card2 else 'أحدث الأدوات والمنتجات.' }}
                         </p>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -93,17 +91,13 @@
                         <p style="color: var(--primary); font-weight: bold;">خبير حلاقة</p>
                         <div style="margin-top: 10px; color: var(--muted); font-size: 0.9em;">
                             <p>📞 {{ barber.phone }}</p>
-                            {% if barber.instagram %}
-                            <p>📸 @{{ barber.instagram }}</p>
-                            {% endif %}
                         </div>
                         
-                        {% set whatsapp_message = 'مرحبا ' + barber.name + '، أود حجز موعد حلاقة في أقرب وقت. شكرا.' %}
-                        <a href="https://wa.me/{{ barber.phone }}?text={{ whatsapp_message | urlencode }}" 
+                        <a href="https://wa.me/{{ barber.phone }}?text=مرحباً {{ barber.name }}، أود حجز موعد حلاقة في صالون الأسد" 
                            target="_blank" class="btn btn-primary" style="margin-top: 15px; width: 100%;">
                            حجز موعد عبر واتساب
                         </a>
-                        </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
@@ -142,9 +136,7 @@
                         </div>
                         <div class="card" style="margin-top: 15px;">
                             <h3>العنوان</h3>
-                            <p>
-                                {{ site_data.extra_texts.address if site_data.extra_texts and site_data.extra_texts.address else 'اسطنبول، الفاتح، شارع الاستقلال' }}
-                            </p>
+                            <p>{{ site_data.extra_texts.Adress if site_data.extra_texts and site_data.extra_texts.Adress else 'اسطنبول، الفاتح، صالون الأسد' }}</p>
                         </div>
                     </div>
                     
@@ -164,13 +156,11 @@
                     {% if site_data.extra_texts and site_data.extra_texts.map_iframe_code %}
                         {{ site_data.extra_texts.map_iframe_code | safe }}
                     {% else %}
-                        <p style="text-align: center; padding: 20px; color: var(--muted);">الخريطة غير متوفرة. الرجاء إدخال كود الخريطة في لوحة التحكم (النصوص الإضافية).</p>
+                        <p style="text-align: center; padding: 20px; color: var(--muted);">الخريطة متوفرة قريباً.</p>
                     {% endif %}
                 </div>
-                
             </div>
         </section>
-        
     </main>
 
     <footer>
