@@ -27,6 +27,12 @@
             "phone": "05301234567",
             "image": "kuafor_mustafa.jpg",
             "instagram": ""
+        },
+        {
+            "name": "حيدر",
+            "phone": "05383686314",
+            "image": "kuafor_hayder.jpeg",
+            "instagram": ""
         }
     ],
     "gallery_images": [
@@ -41,6 +47,10 @@
         {
             "filename": "mustafa_1.jpg",
             "barber_name": "مصطفى"
+        },
+        {
+            "filename": "hayder_1.jpg",
+            "barber_name": "حيدر"
         }
     ]
 }
