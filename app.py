@@ -1,81 +1,91 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 import json
 import os
+import hashlib
 
-app = Flask(__name__)
-app.secret_key = "aslan_barber_2025"
+app = Flask(__name__, static_folder='static', template_folder='templates')
+app.secret_key = "aslan_barber_ultra_secure_2025"
 
-# تحديد المسار الكامل لملف البيانات لضمان وصول السيرفر إليه
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_FILE = os.path.join(BASE_DIR, 'data.json')
+SITE_DATA_FILE = os.path.join(BASE_DIR, 'site_data.json')
+ADMIN_DATA_FILE = os.path.join(BASE_DIR, 'admin_data.json')
 
-def load_data():
-    """تحميل البيانات مع معالجة الأخطاء لمنع تعطل السيرفر"""
-    if not os.path.exists(DATA_FILE):
-        # في حال عدم وجود الملف، سيقوم السيرفر بإنشاء هذه البيانات فوراً
-        initial_data = {
-            "admin_password": "123",
-            "hero_title": "صالون الأسد للحلاقة",
-            "hero_desc": "أفضل تجربة حلاقة في المنطقة.",
-            "barbers": [
-                {"name": "قاسم", "phone": "05354057831", "image": "kuafor_qasim.jpg", "instagram": ""},
-                {"name": "رائد", "phone": "05011087030", "image": "kuafor_raed.jpg", "instagram": ""},
-                {"name": "مصطفى", "phone": "05315969753", "image": "kuafor_mustafa.jpg", "instagram": ""},
-                {"name": "حيدر", "phone": "05383686314", "image": "kuafor_hayder.jpeg", "instagram": ""}
-            ],
-            "gallery_images": [],
-            "extra_texts": {"opening_hours": "9:00 AM - 10:00 PM", "address": "اسطنبول"}
-        }
-        with open(DATA_FILE, 'w', encoding='utf-8') as f:
-            json.dump(initial_data, f, ensure_ascii=False, indent=4)
-        return initial_data
-
-    try:
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+# دالة تحميل البيانات
+def load_data(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except Exception:
-        return {"barbers": [], "hero_title": "Error Loading Data"}
+    return {}
 
-def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+# دالة حفظ البيانات
+def save_data(file_path, data):
+    with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 @app.route('/')
 def index():
-    try:
-        site_data = load_data()
-        return render_template('index.html', site_data=site_data)
-    except Exception as e:
-        return f"خطأ في تحميل الصفحة الرئيسية: {str(e)}"
+    return render_template('index.html', site_data=load_data(SITE_DATA_FILE))
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
-    site_data = load_data()
     if request.method == 'POST':
-        password = request.form.get('password')
-        if password == site_data.get('admin_password', '123'):
+        user_input = request.form.get('username')
+        pass_input = request.form.get('password')
+        admin_data = load_data(ADMIN_DATA_FILE)
+        
+        # تشفير كلمة المرور للمقارنة
+        input_hash = hashlib.sha256(pass_input.encode()).hexdigest()
+        
+        if user_input == admin_data.get('username') and input_hash == admin_data.get('password_hash'):
+            session['logged_in'] = True
             return redirect(url_for('dashboard'))
-        return "كلمة المرور خاطئة!"
+        return "بيانات الدخول خاطئة!"
     return render_template('admin_login.html')
 
 @app.route('/dashboard')
 def dashboard():
-    site_data = load_data()
-    return render_template('dashboard.html', site_data=site_data)
+    if not session.get('logged_in'):
+        return redirect(url_for('admin_login'))
+    return render_template('dashboard.html', site_data=load_data(SITE_DATA_FILE))
 
-@app.route('/add_barber', methods=['POST'])
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('index'))
+
+# --- روابط الـ API المطلوبة للـ Dashboard ---
+
+@app.route('/api/update_texts', methods=['POST'])
+def update_texts():
+    data = load_data(SITE_DATA_FILE)
+    req = request.json
+    data['hero_title'] = req.get('hero_title')
+    data['hero_desc'] = req.get('hero_desc')
+    save_data(SITE_DATA_FILE, data)
+    return jsonify({"success": True, "message": "تم تحديث النصوص بنجاح"})
+
+@app.route('/api/add_barber', methods=['POST'])
 def add_barber():
-    if request.method == 'POST':
-        site_data = load_data()
-        new_barber = {
-            "name": request.form.get('name'),
-            "phone": request.form.get('phone'),
-            "instagram": request.form.get('instagram', ''),
-            "image": "kuafor_mustafa.jpg"
-        }
-        site_data['barbers'].append(new_barber)
-        save_data(site_data)
-        return redirect(url_for('dashboard'))
+    data = load_data(SITE_DATA_FILE)
+    data['barbers'].append(request.json)
+    save_data(SITE_DATA_FILE, data)
+    return jsonify({"success": True, "message": "تم إضافة الحلاق"})
+
+@app.route('/api/delete_barber/<name>', methods=['DELETE'])
+def delete_barber(name):
+    data = load_data(SITE_DATA_FILE)
+    data['barbers'] = [b for b in data['barbers'] if b['name'] != name]
+    save_data(SITE_DATA_FILE, data)
+    return jsonify({"success": True, "message": "تم حذف الحلاق"})
+
+@app.route('/api/update_about', methods=['POST'])
+def update_about():
+    data = load_data(SITE_DATA_FILE)
+    req = request.json
+    if 'extra_texts' not in data: data['extra_texts'] = {}
+    data['extra_texts'].update(req)
+    save_data(SITE_DATA_FILE, data)
+    return jsonify({"success": True, "message": "تم تحديث قسم معلومات عنا"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
