@@ -1,67 +1,69 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 import json
 import os
 
 app = Flask(__name__)
-app.secret_key = "super_secret_key"
+app.secret_key = "aslan_barber_secret_key"
 
-# بيانات الموقع - قمت بتصحيح علامات التنصيص المفقودة عند اسم رائد
-site_data = {
-    "hero_title": "صالون الأسد للحلاقة",
-    "hero_desc": "أفضل تجربة حلاقة في المنطقة، جودة وعناية فائقة.",
-    "barbers": [
-        {"name": "رائد", "phone": "905011087030", "instagram": "", "image": "kuafor_raed.jpg"},
-        {"name": "قاسم", "phone": "905354057831", "instagram": "https://www.instagram.com/bi9ck?igsh=MWZqdjgzaGozMTJyYg%3D%3D&utm_source=qr", "image": "kuaför_qasim.jpg"},
-        {"name": "حيدر", "phone": "905383686314", "instagram": "", "image": "kuafor_hayder.jpeg"},
-        {"name": "مصطفى", "phone": "905315969753", "instagram": "https://www.instagram.com/mustafa_hairdresser77?igsh=NXZqdmhyeG04YzQ3&utm_source=qr", "image": "kuafor_mustafa.jpg"}
-    ],
-    "gallery_images": [],
-    "extra_texts": {
-        "about_title": "ما يميزنا",
-        "about_desc_card1": "حلاقة عصرية تناسب شخصيتك.",
-        "about_image1": "صوره داخليه.jpg",
-        "opening_hours": "يومياً من 9:00 صباحاً حتى 10:00 مساءً",
-        "address": "اسطنبول، الفاتح، شارع الاستقلال"
-    }
-}
+# اسم ملف البيانات
+DATA_FILE = 'data.json'
+
+def load_data():
+    """وظيفة لقراءة البيانات من ملف data.json"""
+    try:
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        # بيانات احتياطية في حال فقدان الملف
+        return {"barbers": [], "hero_title": "صالون الأسد", "admin_password": "123"}
+
+def save_data(data):
+    """وظيفة لحفظ البيانات المحدثة في ملف data.json"""
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
 
 @app.route('/')
 def index():
+    # تحميل أحدث البيانات (بما في ذلك حيدر وأي حلاق جديد)
+    site_data = load_data()
     return render_template('index.html', site_data=site_data)
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
+    site_data = load_data()
     if request.method == 'POST':
-        username = request.form.get('username')
         password = request.form.get('password')
-        if username == 'admin' and password == '1234':
+        # التحقق من كلمة المرور الموجودة داخل data.json
+        if password == site_data.get('admin_password', '123'):
             return redirect(url_for('dashboard'))
         else:
-            return "بيانات الدخول خاطئة! <a href='/admin_login'>حاول مرة أخرى</a>"
+            return "كلمة المرور خاطئة! <a href='/admin_login'>حاول ثانية</a>"
     return render_template('admin_login.html')
 
 @app.route('/dashboard')
 def dashboard():
+    site_data = load_data()
     return render_template('dashboard.html', site_data=site_data)
 
 @app.route('/add_barber', methods=['POST'])
 def add_barber():
     if request.method == 'POST':
-        name = request.form.get('name')
-        phone = request.form.get('phone')
-        instagram = request.form.get('instagram')
+        site_data = load_data()
         
+        # إنشاء بيانات الحلاق الجديد من النموذج
         new_barber = {
-            "name": name,
-            "phone": phone,
-            "instagram": instagram,
-            "image": "kuafor_mustafa.jpg" 
+            "name": request.form.get('name'),
+            "phone": request.form.get('phone'),
+            "instagram": request.form.get('instagram', ''),
+            "image": "kuafor_mustafa.jpg" # صورة افتراضية
         }
         
+        # إضافة الحلاق للقائمة وحفظ الملف فوراً
         site_data['barbers'].append(new_barber)
+        save_data(site_data)
+        
         return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
-    # أضفنا منفذ Port ليتوافق مع Render
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
