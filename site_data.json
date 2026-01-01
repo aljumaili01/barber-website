@@ -30,10 +30,11 @@
     "gallery_images": [],
     "extra_texts": {
         "about_title": "ما يميز صالوننا",
-        "about_image1": "about1.jpg",
+        "about_image1": "صوره داخليه.jpg",
         "about_desc_card1": "خبرة تزيد عن 10 سنوات في مجال الحلاقة والتجميل.",
-        "about_image2": "about2.jpg",
-        "about_desc_card2": "نستخدم أحدث الأدوات وأجود المنتجات لضمان سلامتك وراحتك.",
+        "about_image2": "patron.jpeg",
+        "about_desc_card2": "يمكنكم التواصل معي عن طريق الرقم لجميع الاستفسارات التجاريه والشكاوي 05384005692.",
         "Adress": "العنوان فاتح جاده بالقرب من مطعم الراعي حلاقه الاسد"
     }
 }
+
