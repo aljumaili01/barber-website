@@ -10,9 +10,12 @@ SITE_DATA_FILE = os.path.join(BASE_DIR, 'site_data.json')
 
 def load_data():
     if os.path.exists(SITE_DATA_FILE):
-        with open(SITE_DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {"hero_title": "", "hero_desc": "", "barbers": [], "gallery_images": [], "extra_texts": {}}
+        try:
+            with open(SITE_DATA_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            pass
+    return {"hero_title": "حلاقة الأسد", "hero_desc": "", "barbers": [], "gallery_images": [], "extra_texts": {}}
 
 def save_data(data):
     with open(SITE_DATA_FILE, 'w', encoding='utf-8') as f:
@@ -42,15 +45,13 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for('index'))
 
-# --- الأكواد البرمجية (APIs) التي تطلبها لوحة التحكم الخاصة بك ---
-
 @app.route('/api/update_texts', methods=['POST'])
 def update_texts():
     data = load_data()
     data['hero_title'] = request.json.get('hero_title')
     data['hero_desc'] = request.json.get('hero_desc')
     save_data(data)
-    return jsonify({"success": True, "message": "تم حفظ النصوص بنجاح"})
+    return jsonify({"success": True, "message": "تم الحفظ"})
 
 @app.route('/api/update_about', methods=['POST'])
 def update_about():
@@ -65,7 +66,7 @@ def add_barber():
     data = load_data()
     data['barbers'].append(request.json)
     save_data(data)
-    return jsonify({"success": True, "message": "تم إضافة الحلاق بنجاح"})
+    return jsonify({"success": True, "message": "تم إضافة الحلاق"})
 
 @app.route('/api/update_barber', methods=['POST'])
 def update_barber():
@@ -76,21 +77,21 @@ def update_barber():
             b.update({k: v for k, v in req.items() if k != 'old_name'})
             break
     save_data(data)
-    return jsonify({"success": True, "message": "تم تحديث بيانات الحلاق"})
+    return jsonify({"success": True, "message": "تم التحديث"})
 
 @app.route('/api/delete_barber/<name>', methods=['DELETE'])
 def delete_barber(name):
     data = load_data()
     data['barbers'] = [b for b in data['barbers'] if b['name'] != name]
     save_data(data)
-    return jsonify({"success": True, "message": "تم حذف الحلاق"})
+    return jsonify({"success": True, "message": "تم الحذف"})
 
 @app.route('/api/add_image', methods=['POST'])
 def add_image():
     data = load_data()
     data['gallery_images'].append(request.json)
     save_data(data)
-    return jsonify({"success": True, "message": "تم إضافة الصورة للمعرض"})
+    return jsonify({"success": True, "message": "تم إضافة الصورة"})
 
 @app.route('/api/delete_image/<filename>', methods=['DELETE'])
 def delete_image(filename):
@@ -104,7 +105,7 @@ def add_text():
     data = load_data()
     data['extra_texts'][request.json['key']] = request.json['value']
     save_data(data)
-    return jsonify({"success": True, "message": "تم إضافة النص الجديد"})
+    return jsonify({"success": True, "message": "تم إضافة النص"})
 
 @app.route('/api/delete_text/<key>', methods=['DELETE'])
 def delete_text(key):
