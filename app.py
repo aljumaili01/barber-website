@@ -21,6 +21,18 @@ def save_data(data):
     with open(SITE_DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+# --- ميزة تصحيح روابط الواتساب تلقائياً ---
+@app.template_filter('whatsapp_format')
+def whatsapp_format(phone):
+    clean_phone = str(phone).replace(" ", "").replace("+", "").replace("-", "")
+    if clean_phone.startswith('0'):
+        # تحويل الرقم التركي من 05 إلى 905
+        return "9" + clean_phone 
+    if len(clean_phone) == 10 and clean_phone.startswith('5'):
+        # تحويل 5xxxx إلى 905xxxx
+        return "90" + clean_phone
+    return clean_phone
+
 @app.route('/')
 def index():
     return render_template('index.html', site_data=load_data())
