@@ -3,10 +3,10 @@
     "hero_desc": "نقدم أفضل خدمات قص الشعر وحلاقة الذقن بأيدي أمهر الحلاقين.",
     "barbers": [
         {
-            "name": "رائد",
-            "phone": "05011087030",
-            "image": "kuafor_raed.jpg",
-            "instagram": ""
+            "name": "مصطفى",
+            "phone": "05315969753",
+            "image": "kuafor_mustafa.jpg",
+            "instagram": "mustafa_barber"
         },
         {
             "name": "قاسم",
@@ -15,25 +15,25 @@
             "instagram": "qasim_barber"
         },
         {
-            "name": "مصطفى",
-            "phone": "05315969753",
-            "image": "kuafor_mustafa.jpg",
-            "instagram": "mustafa_barber
+            "name": "رائد",
+            "phone": "05011087030",
+            "image": "kuafor_raed.jpg",
+            "instagram": "raed_barber"
         },
         {
             "name": "حيدر",
-            "phone": "05383686314",
+            "phone": "905300000000",
             "image": "kuafor_hayder.jpeg",
-            "instagram": ""
+            "instagram": "hayder_barber"
         }
     ],
     "gallery_images": [],
     "extra_texts": {
         "about_title": "ما يميز صالوننا",
         "about_image1": "about1.jpg",
-        "about_desc_card1": "خبرة تزيد عن 10 سنوات في مجال الحلاقة والتجميل، نضمن لك إطلالة عصرية ومتميزة.",
+        "about_desc_card1": "خبرة تزيد عن 10 سنوات في مجال الحلاقة والتجميل.",
         "about_image2": "about2.jpg",
-        "about_desc_card2": "نستخدم أحدث الأدوات وأجود المنتجات لضمان سلامتك وراحتك.",
+        "about_desc_card2": "نستخدم أحدث الأدوات وأجود المنتجات.",
         "Adress": "العنوان فاتح جاده بالقرب من مطعم الراعي حلاقه الاسد"
     }
 }
