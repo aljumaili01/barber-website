@@ -93,7 +93,7 @@
                             <p>📞 {{ barber.phone }}</p>
                         </div>
                         
-                        <a href="https://wa.me/{{ barber.phone }}?text=مرحباً {{ barber.name }}، أود حجز موعد حلاقة في صالون الأسد" 
+                        <a href="https://wa.me/{{ barber.phone | whatsapp_format }}?text=مرحباً {{ barber.name }}، أود حجز موعد حلاقة في صالون الأسد" 
                            target="_blank" class="btn btn-primary" style="margin-top: 15px; width: 100%;">
                            حجز موعد عبر واتساب
                         </a>
@@ -113,7 +113,7 @@
                     <div class="card" style="padding: 10px;">
                         <img src="{{ url_for('static', filename=image_obj.filename) }}" alt="صورة من المعرض" style="border-radius: 8px;">
                         <p style="text-align: center; color: var(--muted); font-size: 0.8em; margin-top: 5px;">
-                            عمل لـ: **{{ image_obj.barber_name }}**
+                            عمل لـ: <strong>{{ image_obj.barber_name }}</strong>
                         </p>
                     </div>
                     {% endfor %}
@@ -165,7 +165,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 صالون الأسد للحلاقة. جميع الحقوق محفوظة.</p>
+            <p>&copy; 2026 صالون الأسد للحلاقة. جميع الحقوق محفوظة.</p>
         </div>
     </footer>
 
