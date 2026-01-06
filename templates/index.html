@@ -58,22 +58,37 @@
                 <h2 class="title">{{ site_data.extra_texts.about_title if site_data.extra_texts and site_data.extra_texts.about_title else 'ما يميزنا' }}</h2>
                 <p class="subtitle">نحن نجمع بين الخبرة والجودة لنمنحك أفضل إطلالة.</p>
                 
-                <div class="grid cards" style="grid-template-columns: 1fr 1fr; align-items: stretch;">
+                <div class="grid cards" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: stretch; gap: 20px;">
+                    
                     <div class="card">
                         <img src="{{ url_for('static', filename=site_data.extra_texts.about_image1 if site_data.extra_texts and site_data.extra_texts.about_image1 else 'about1.jpg') }}" 
-                             alt="صورة البطاقة 1" style="height: 200px; object-fit: cover; margin-bottom: 15px;">
-                        <p style="color: var(--muted); line-height: 1.6;">
+                             alt="صورة البطاقة 1" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="color: var(--muted); line-height: 1.6; font-weight: bold;">
                             {{ site_data.extra_texts.about_desc_card1 if site_data.extra_texts and site_data.extra_texts.about_desc_card1 else 'خبرة تزيد عن 10 سنوات.' }}
                         </p>
                     </div>
 
                     <div class="card">
-                        <img src="{{ url_for('static', filename=site_data.extra_texts.about_image2 if site_data.extra_texts and site_data.extra_texts.about_image2 else 'about2.jpg') }}" 
-                             alt="صورة البطاقة 2" style="height: 200px; object-fit: cover; margin-bottom: 15px;">
-                        <p style="color: var(--muted); line-height: 1.6;">
-                            {{ site_data.extra_texts.about_desc_card2 if site_data.extra_texts and site_data.extra_texts.about_desc_card2 else 'أحدث الأدوات والمنتجات.' }}
+                        <a href="https://wa.me/905384005692" target="_blank" style="text-decoration: none; color: inherit;">
+                            <img src="{{ url_for('static', filename='patron.jpeg') }}" 
+                                 alt="صورة المدير" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+                            <p style="color: var(--muted); line-height: 1.6; font-weight: bold;">
+                                {{ site_data.extra_texts.about_desc_card2 if site_data.extra_texts and site_data.extra_texts.about_desc_card2 else 'يمكنكم التواصل معي للخدمات الاخرى.' }}
+                            </p>
+                            <span style="color: #25D366; font-size: 0.9em;">🟢 اضغط للتواصل واتساب</span>
+                        </a>
+                    </div>
+
+                    {% if site_data.extra_texts.about_image3 or site_data.extra_texts.about_desc_card3 %}
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='sadeq.jpeg') }}" 
+                             alt="صادق" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+                        <p style="color: var(--primary); line-height: 1.6; font-weight: 900; font-size: 1.3em;">
+                            {{ site_data.extra_texts.about_desc_card3 if site_data.extra_texts and site_data.extra_texts.about_desc_card3 else 'محبوب الجماهير صادق' }}
                         </p>
                     </div>
+                    {% endif %}
+
                 </div>
             </div>
         </section>
